@@ -1,0 +1,111 @@
+classDiagram
+    direction TB
+    class Usuario {
+        -Long codigo
+        -String nome
+        -String email
+        -String senha
+        -String cargo
+        -String empresa
+        +Usuario(UsuarioDTO)
+    }
+    class Cliente {
+        -Long codigo
+        -String nome
+        -String cnpj
+        -String segmento
+        -String porte
+        -String email
+        +Cliente(ClienteDTO)
+    }
+    class Reuniao {
+        -Long codigo
+        -String titulo
+        -LocalDateTime dataHora
+        -Integer duracaoMinutos
+        -String tipo
+        -String status
+        -Boolean processada
+        -Long codigoUsuario
+        -Long codigoCliente
+        -Double valorOportunidade
+        -Integer scoreRisco
+        -Boolean concorrente
+        -Integer nps
+        -Integer reclamacoes
+        -Boolean sinalChurn
+        +Reuniao(ReuniaoDTO)
+        +calcularPrioridade() double
+        +classificar() String
+        +gerarAlerta() String
+        +podeMudarStatus(String) boolean
+    }
+    class Transcricao {
+        -Long codigo
+        -Long codigoReuniao
+        -String texto
+        -Integer quantidadePalavras
+        -LocalDateTime dataEnvio
+    }
+    class Analise {
+        -Long codigo
+        -Long codigoReuniao
+        -String sentimento
+        -Integer scoreSentimento
+        -Integer riscoChurn
+        -Integer scoreOportunidade
+        -String produtos
+        -String concorrentes
+        -String termos
+        -String recomendacao
+        -LocalDateTime dataAnalise
+        +getNivelRiscoChurn() String
+        +getNivelOportunidade() String
+    }
+    class ReuniaoService {
+        +cadastrar(ReuniaoDTO) Reuniao
+        +atualizar(Long, ReuniaoDTO) Reuniao
+        +alterarStatus(Long, String) Reuniao
+        +excluir(Long) void
+        +listarPrioritarias() List~Reuniao~
+        +enviarTranscricao(Long, String) Analise
+    }
+    class AnaliseService {
+        +analisar(String) Analise
+    }
+    class ClienteService {
+        +cadastrar(ClienteDTO) Cliente
+        +atualizar(Long, ClienteDTO) Cliente
+        +excluir(Long) void
+        +validarCnpj(String) void
+    }
+    class UsuarioService {
+        +cadastrar(UsuarioDTO) Usuario
+        +atualizar(Long, UsuarioDTO) Usuario
+        +excluir(Long) void
+        +login(LoginDTO) Usuario
+    }
+    class ReuniaoRepository {
+        <<interface>>
+        +findByCodigo(Long) Reuniao
+        +findByCodigoCliente(Long) List~Reuniao~
+        +findByTipo(String) List~Reuniao~
+        +findByStatus(String) List~Reuniao~
+    }
+    class ReuniaoController {
+        +cadastrar(ReuniaoDTO) ResponseEntity
+        +consultar() ResponseEntity
+        +consultarPorCodigo(Long) ResponseEntity
+        +atualizar(Long, ReuniaoDTO) ResponseEntity
+        +excluir(Long) ResponseEntity
+        +enviarTranscricao(Long, TranscricaoDTO) ResponseEntity
+    }
+    Usuario "1" <-- "0..*" Reuniao : codigoUsuario
+    Cliente "1" <-- "0..*" Reuniao : codigoCliente
+    Reuniao "1" <-- "0..1" Transcricao : codigoReuniao
+    Reuniao "1" <-- "0..1" Analise : codigoReuniao
+    ReuniaoController --> ReuniaoService
+    ReuniaoController --> ReuniaoRepository
+    ReuniaoService --> AnaliseService
+    ReuniaoService --> ReuniaoRepository
+    ReuniaoRepository ..> Reuniao

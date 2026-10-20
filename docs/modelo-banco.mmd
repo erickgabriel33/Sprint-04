@@ -1,0 +1,58 @@
+erDiagram
+    REUNIA_USUARIOS ||--o{ REUNIA_REUNIOES : "responsavel"
+    REUNIA_CLIENTES ||--o{ REUNIA_REUNIOES : "participa"
+    REUNIA_REUNIOES ||--o| REUNIA_TRANSCRICOES : "possui"
+    REUNIA_REUNIOES ||--o| REUNIA_ANALISES : "gera"
+    REUNIA_USUARIOS {
+        NUMBER codigo PK
+        VARCHAR2 nome
+        VARCHAR2 email
+        VARCHAR2 senha
+        VARCHAR2 cargo
+        VARCHAR2 empresa
+    }
+    REUNIA_CLIENTES {
+        NUMBER codigo PK
+        VARCHAR2 nome
+        VARCHAR2 cnpj
+        VARCHAR2 segmento
+        VARCHAR2 porte
+        VARCHAR2 email
+    }
+    REUNIA_REUNIOES {
+        NUMBER codigo PK
+        NUMBER codigo_usuario FK
+        NUMBER codigo_cliente FK
+        VARCHAR2 titulo
+        TIMESTAMP data_hora
+        NUMBER duracao_minutos
+        VARCHAR2 tipo "VENDAS ou CS"
+        VARCHAR2 status "AGENDADA REALIZADA CANCELADA"
+        BOOLEAN processada
+        BINARY_DOUBLE valor_oportunidade "VENDAS"
+        NUMBER score_risco "VENDAS"
+        BOOLEAN concorrente "VENDAS"
+        NUMBER nps "CS"
+        NUMBER reclamacoes "CS"
+        BOOLEAN sinal_churn "CS"
+    }
+    REUNIA_TRANSCRICOES {
+        NUMBER codigo PK
+        NUMBER codigo_reuniao FK
+        VARCHAR2 texto "ate 4000"
+        NUMBER quantidade_palavras
+        TIMESTAMP data_envio
+    }
+    REUNIA_ANALISES {
+        NUMBER codigo PK
+        NUMBER codigo_reuniao FK
+        VARCHAR2 sentimento
+        NUMBER score_sentimento
+        NUMBER risco_churn
+        NUMBER score_oportunidade
+        VARCHAR2 produtos
+        VARCHAR2 concorrentes
+        VARCHAR2 termos
+        VARCHAR2 recomendacao "ate 1000"
+        TIMESTAMP data_analise
+    }
